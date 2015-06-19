@@ -8,21 +8,47 @@ class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.name_widget = NameWidget()
-        self.setCentralWidget(self.name_widget)
 
+        #Create both widgets from 'blueprint'
+        self.name_widget = NameWidget()
         self.hello_widget = HelloWidget()
-        #self.setCentralWidget(self.hello_widget)
+
+        #Create the stacked layout
+        self.stack = QStackedLayout()
+
+
+        #Add both widgets to the stacked layout
+        self.stack.addWidget(self.name_widget)
+        self.stack.addWidget(self.hello_widget)
+
+        
+        #Create a widget to use in the main window
+        self.widget = QWidget()
+
+        #Set the stacked layout to the widget
+        self.widget.setLayout(self.stack)
+
+        #Set the stacked layout widget as the central widget
+        self.setCentralWidget(self.widget)
 
         self.name_widget.NameEntered.connect(self.name_provided)
+        self.hello_widget.BackPushed.connect(self.back_clicked)
+
+
 
     def name_provided(self):
-        print("got here")
-        self.setCentralWidget(self.hello_widget)
+        self.stack.setCurrentIndex(1)
         name = self.name_widget.username.text()
-        print(name)
         self.name_widget.NameEntered.connect(self.name_provided)
         self.hello_widget.hellolabel.setText("Hello {0}".format(name))
+
+    def back_clicked(self):
+        self.stack.setCurrentIndex(0)
+        self.name_widget.username.clear()
+        
+
+
+
 
 
 if __name__ == "__main__":
